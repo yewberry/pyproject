@@ -1,0 +1,1 @@
+.\venv\Scripts\python .\pyproject\zw\images.py
