@@ -3,7 +3,7 @@ import wx
 import zw.logger as logger
 from zw.utils import Timeit
 from ui.ribbonframe import RibbonFrame
-LOG = logger.get_logger(__name__)
+LOG = logger.getLogger(__name__)
 class App(wx.App):
 	def OnInit(self):
 		t = Timeit()

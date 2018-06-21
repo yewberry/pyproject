@@ -1,8 +1,13 @@
 import logging
 import logging.config
+from pathlib import Path
 
-def get_logger(name=__name__):
+LOG_DIR = Path.home().joinpath('logs')
+LOG_FILE = 'app.log'
+
+def getLogger(name=__name__):
 	'''Get logger with name'''
+	Path(LOG_DIR).mkdir(parents=True, exist_ok=True)
 	logger = logging.getLogger(name)
 	logging.config.dictConfig({
 		'version': 1,
@@ -21,7 +26,7 @@ def get_logger(name=__name__):
 			'logfile': {
 				'class': 'logging.handlers.RotatingFileHandler',
 				'formatter': 'simple',
-				'filename': "logs/app.log",
+				'filename': Path(LOG_DIR).joinpath(LOG_FILE),
 				'maxBytes': 10485760,
 				'backupCount': 20,
 				'encoding': 'utf8',

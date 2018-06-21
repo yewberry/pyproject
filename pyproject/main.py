@@ -2,10 +2,12 @@ import sys
 import traceback
 import multiprocessing
 import zw.logger as logger
+# must set log file name before any class of my
+logger.LOG_FILE = 'PyProject.log'
+
 from ui.app import App
 
-LOG = logger.get_logger(__name__)
-
+LOG = logger.getLogger(__name__)
 def main():
 	LOG.info('sys.path:'+str(sys.path))
 	try:

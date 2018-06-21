@@ -1,6 +1,6 @@
 import wx
-import zw.images as images
 import wx.ribbon as RB
+import zw.images as images
 
 ID_NEW_DOC = wx.ID_HIGHEST + 1
 ID_NEW_TEMP = ID_NEW_DOC + 1
@@ -10,14 +10,13 @@ class RibbonFrame(wx.Frame):
 	def __init__(self, parent, id=wx.ID_ANY, title='', pos=wx.DefaultPosition,
 				 size=wx.DefaultSize, style=wx.DEFAULT_FRAME_STYLE):
 		wx.Frame.__init__(self, parent, id, title, pos, size, style)
-		panel = wx.Panel(self)
 
-		self._ribbon = RB.RibbonBar(panel, style=RB.RIBBON_BAR_DEFAULT_STYLE | RB.RIBBON_BAR_SHOW_PANEL_EXT_BUTTONS)
+		self._panel = wx.Panel(self)
+		self._ribbon = RB.RibbonBar(self._panel, style=RB.RIBBON_BAR_DEFAULT_STYLE | RB.RIBBON_BAR_SHOW_PANEL_EXT_BUTTONS)
 
 		home = RB.RibbonPage(self._ribbon, wx.ID_ANY, 'Examples', images.logo.Bitmap)
 		toolbar_panel = RB.RibbonPanel(home, wx.ID_ANY, 'Toolbar',
 					style=RB.RIBBON_PANEL_NO_AUTO_MINIMISE | RB.RIBBON_PANEL_EXT_BUTTON)
-
 		toolbar = RB.RibbonToolBar(toolbar_panel, wx.ID_ANY)
 		# toolbar.AddTool(wx.ID_ANY, wx.Bitmap(images.logo.Bitmap, 16, 15))
 		# toolbar.AddTool(wx.ID_ANY, images.logo.Bitmap)
@@ -25,17 +24,14 @@ class RibbonFrame(wx.Frame):
 		toolbar.AddTool(wx.ID_ANY, wx.ArtProvider.GetBitmap(wx.ART_FILE_SAVE, wx.ART_OTHER, wx.Size(16, 15)))
 		toolbar.AddTool(wx.ID_ANY, wx.ArtProvider.GetBitmap(wx.ART_FILE_SAVE_AS, wx.ART_OTHER, wx.Size(16, 15)))
 		toolbar.AddSeparator()
-
 		toolbar.AddHybridTool(wx.ID_NEW, wx.ArtProvider.GetBitmap(wx.ART_NEW, wx.ART_OTHER, wx.Size(16, 15)))
 		toolbar.AddTool(wx.ID_ANY, wx.ArtProvider.GetBitmap(wx.ART_FILE_OPEN, wx.ART_OTHER, wx.Size(16, 15)))
 		toolbar.AddTool(wx.ID_ANY, wx.ArtProvider.GetBitmap(wx.ART_FILE_SAVE, wx.ART_OTHER, wx.Size(16, 15)))
 		toolbar.AddTool(wx.ID_ANY, wx.ArtProvider.GetBitmap(wx.ART_FILE_SAVE_AS, wx.ART_OTHER, wx.Size(16, 15)))
 		toolbar.AddSeparator()
-
 		toolbar.AddDropdownTool(wx.ID_UNDO, wx.ArtProvider.GetBitmap(wx.ART_UNDO, wx.ART_OTHER, wx.Size(16, 15)))
 		toolbar.AddDropdownTool(wx.ID_REDO, wx.ArtProvider.GetBitmap(wx.ART_REDO, wx.ART_OTHER, wx.Size(16, 15)))
 		toolbar.AddSeparator()
-
 		toolbar.AddHybridTool(wx.ID_PRINT, wx.ArtProvider.GetBitmap(wx.ART_PRINT, wx.ART_OTHER, wx.Size(16, 15)),
 							  'This is the Print button tooltip\ndemonstrating a tooltip')
 		toolbar.SetRows(2, 2)
@@ -45,13 +41,12 @@ class RibbonFrame(wx.Frame):
 		self._ribbon.Realize()
 		s = wx.BoxSizer(wx.VERTICAL)
 		s.Add(self._ribbon, 0, wx.EXPAND)
-		panel.SetSizer(s)
-		self.panel = panel
+		self._panel.SetSizer(s)
 
 		self.BindEvents(toolbar_panel)
-		#self.SetIcon(images.zhao.Bitmap)
+		#self.SetIcon(images.logo.Icon)
 		self.CenterOnScreen()
-		self.SetArtProvider(RB.RibbonMSWArtProvider())
+		self.setArtProvider(RB.RibbonMSWArtProvider())
 
 	def BindEvents(self, toolbar_panel):
 		toolbar_panel.Bind(RB.EVT_RIBBONPANEL_EXTBUTTON_ACTIVATED, self.OnExtButton)
@@ -89,7 +84,7 @@ class RibbonFrame(wx.Frame):
 	def OnExtButton(self, event):
 		wx.MessageBox('Extended button activated')
 
-	def SetArtProvider(self, prov):
+	def setArtProvider(self, prov):
 		self._ribbon.DismissExpandedPanel()
 		self._ribbon.Freeze()
 		self._ribbon.SetArtProvider(prov)
