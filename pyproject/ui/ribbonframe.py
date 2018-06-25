@@ -1,17 +1,21 @@
 import wx
 import wx.ribbon as RB
 import zw.images as images
+import zw.utils as utils
+import ui.trayicon as trayicon
 
 ID_BAR_FOO = wx.ID_HIGHEST + 1
 ID_BAR_TOGGLE = ID_BAR_FOO + 1
 ID_NEW_MAIL = ID_BAR_FOO + 2
 ID_BTN_DROP = ID_BAR_FOO + 3
+ID_BAR_TOGGLE2 = ID_BAR_FOO + 4
 
 class RibbonFrame(wx.Frame):
 	def __init__(self, parent, id=wx.ID_ANY, title='', pos=wx.DefaultPosition,
 				 size=wx.DefaultSize, style=wx.DEFAULT_FRAME_STYLE):
 		wx.Frame.__init__(self, parent, id, title, pos, size, style)
-
+		if utils.isWin32():
+			self._tbIcon = trayicon.TrayIcon(self, images.logo24.Icon)
 		self._panel = wx.Panel(self)
 		self._ribbon = RB.RibbonBar(self._panel, style=RB.RIBBON_BAR_DEFAULT_STYLE | RB.RIBBON_BAR_SHOW_PANEL_EXT_BUTTONS)
 
@@ -33,7 +37,7 @@ class RibbonFrame(wx.Frame):
 		rb_bar2 = RB.RibbonButtonBar(rb_panel2, wx.ID_ANY)
 		# also has AddToggleTool AddHybridTool and AddDropdownTool
 		rb_bar2.AddButton(wx.ID_ANY, "NormalButton", images.logo48.Bitmap)
-		rb_bar2.AddButton(wx.ID_ANY, "ToggleButton", images.logo48.Bitmap, kind=RB.RIBBON_BUTTON_TOGGLE)
+		rb_bar2.AddButton(ID_BAR_TOGGLE2, "ToggleButton", images.logo48.Bitmap, kind=RB.RIBBON_BUTTON_TOGGLE)
 		rb_bar2.AddButton(wx.ID_ANY, "HybridButton", images.logo48.Bitmap, kind=RB.RIBBON_BUTTON_HYBRID)
 		rb_bar2.AddButton(wx.ID_ANY, "DropButton", images.logo48.Bitmap, kind=RB.RIBBON_BUTTON_DROPDOWN)
 		rb_bar2.AddDropdownButton(ID_BTN_DROP, "Other Polygon", images.logo16.Bitmap, "")
@@ -62,13 +66,18 @@ class RibbonFrame(wx.Frame):
 		# normal toolbar click
 		self.Bind(RB.EVT_RIBBONTOOLBAR_CLICKED, self.OnToolClick, id=ID_BAR_FOO)
 		# toggle toolbar click
-		self.Bind(RB.EVT_RIBBONTOOLBAR_CLICKED, self.OnToogleClick, id=ID_BAR_TOGGLE)		
+		self.Bind(RB.EVT_RIBBONTOOLBAR_CLICKED, self.OnToogleClick, id=ID_BAR_TOGGLE)
+		self.Bind(RB.EVT_RIBBONTOOLBAR_CLICKED, self.OnToogleClick, id=ID_BAR_TOGGLE2)		
 		# hybrid button, dropdown and menu click
 		self.Bind(RB.EVT_RIBBONTOOLBAR_CLICKED, self.OnToolClick, id=wx.ID_NEW)
 		self.Bind(RB.EVT_RIBBONTOOLBAR_DROPDOWN_CLICKED, self.OnToolDropdown, id=wx.ID_NEW)
 		self.Bind(wx.EVT_MENU, self.OnMenuClick, id=wx.ID_NEW)
 		# 
 		# self.Bind(wx.EVT_BUTTON, self.OnColourGalleryButton, id=ID_SECONDARY_COLOUR)
+		# 
+		if utils.isWin32():
+			self.Bind(wx.EVT_ICONIZE, self.onIconify)
+		self.Bind(wx.EVT_CLOSE, self.onClose)
 
 	def OnToolDropdown(self, event):
 		menu = wx.Menu()
@@ -100,4 +109,17 @@ class RibbonFrame(wx.Frame):
 		self._ribbon.SetArtProvider(prov)
 		self._ribbon.Thaw()
 		self._ribbon.Realize()
+
+	def onIconify(self, event):
+		self.Hide()
+
+	def onClose(self, event):
+		'''
+		Destroy the taskbar icon and the frame
+		'''
+		if utils.isWin32():
+			self._tbIcon.RemoveIcon()
+			self._tbIcon.Destroy()
+		self.Destroy()
+
 
